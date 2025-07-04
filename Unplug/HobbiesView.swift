@@ -169,7 +169,7 @@ struct HobbiesView: View {
         let userPrompt = "I need to replace my gaming habit. The things I like about games are \(userLikesInput). Suggest three real-life hobbies or 'quests' I could start. Each suggestion should be brief and actionable."
 
         let groqRequest = GroqChatRequest(
-            model: "mixtral-8x7b-32768", // Or "llama2-70b-8192" or "gemma-7b-it"
+            model: "llama3-8b-8192", // Or "llama2-70b-8192" or "gemma-7b-it"
             messages: [
                 GroqMessage(role: "system", content: systemPrompt),
                 GroqMessage(role: "user", content: userPrompt)

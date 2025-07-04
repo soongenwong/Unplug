@@ -10,11 +10,6 @@ struct UnplugApp: App {
                     .tabItem {
                         Label("Unplug", systemImage: "bolt.fill")
                     }
-
-                HobbiesView()
-                    .tabItem {
-                        Label("New Hobbies", systemImage: "sparkles.magnifyingglass")
-                    }
             }
         }
     }
