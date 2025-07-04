@@ -12,28 +12,6 @@ extension Bundle {
     }
 }
 
-// MARK: - Groq API Data Structures (Codable) (from previous iteration)
-struct GroqChatRequest: Encodable {
-    let model: String
-    let messages: [GroqMessage]
-    let temperature: Double
-    let max_tokens: Int?
-    let stream: Bool
-}
-
-struct GroqMessage: Codable {
-    let role: String
-    let content: String
-}
-
-struct GroqChatResponse: Decodable {
-    let choices: [GroqChoice]
-}
-
-struct GroqChoice: Decodable {
-    let message: GroqMessage
-}
-
 // MARK: - UnplugView (Modified with Streak)
 
 struct UnplugView: View {
@@ -62,98 +40,112 @@ struct UnplugView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.white.ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                Color.white.ignoresSafeArea()
 
-            VStack {
-                Spacer()
+                VStack {
+                    Spacer()
 
-                Text("Unplug")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.red)
-                    .padding(.bottom, 10)
-
-                Text("Feeling an urge to game? Tap the button for an immediate break.")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                    .padding(.bottom, 30) // Adjusted padding
-
-                // MARK: - Streak Display
-                HStack {
-                    Image(systemName: "flame.fill") // Fire emoji for streak
-                        .font(.title2)
-                        .foregroundColor(.orange)
-                    Text("Streak: \(currentStreak) days / 90 days")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.orange)
-                }
-                .padding(.bottom, 30)
-
-
-                // MARK: - The "SOS" Button
-                Button {
-                    // Use Task {} to call the async function from a synchronous button action
-                    Task {
-                        await triggerAIResponse()
-                    }
-                } label: {
-                    Text("I have an urge!")
+                    Text("Unplug")
                         .font(.largeTitle)
-                        .fontWeight(.heavy)
-                        .foregroundColor(.white)
-                        .padding(.vertical, 40)
-                        .padding(.horizontal, 30)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.red.opacity(0.8), Color.red],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .cornerRadius(35)
-                        .shadow(color: .red.opacity(0.4), radius: 15, x: 0, y: 10)
-                }
-                .disabled(isLoading)
-                .scaleEffect(isLoading ? 0.95 : 1.0)
-                .animation(.spring(), value: isLoading)
-
-                Spacer()
-
-                // MARK: - AI Response Area
-                if isLoading {
-                    ProgressView("Thinking...")
-                        .font(.title2)
-                        .padding()
-                        .transition(.opacity)
-                } else if showResponse {
-                    ScrollView {
-                        Text(aiResponse)
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .foregroundColor(.primary)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(20)
-                            .padding(.horizontal)
-                            .minimumScaleFactor(0.8)
-                    }
-                    .frame(maxHeight: 250)
-                    .transition(.opacity)
-                } else if let error = errorMessage {
-                    Text("Error: \(error)")
-                        .font(.headline)
+                        .fontWeight(.bold)
                         .foregroundColor(.red)
-                        .padding()
-                        .multilineTextAlignment(.center)
-                        .transition(.opacity)
-                }
+                        .padding(.bottom, 10)
 
-                Spacer()
+                    Text("Feeling an urge to game? Tap the button for an immediate break.")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .padding(.bottom, 30) // Adjusted padding
+
+                    // MARK: - Streak Display
+                    HStack {
+                        Image(systemName: "flame.fill") // Fire emoji for streak
+                            .font(.title2)
+                            .foregroundColor(.orange)
+                        Text("Streak: \(currentStreak) days / 90 days")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.orange)
+                    }
+                    .padding(.bottom, 30)
+
+                    NavigationLink(destination: HobbiesView()) {
+                        Label("Explore Hobbies", systemImage: "sparkles.magnifyingglass")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 15)
+                            .padding(.horizontal, 30)
+                            .background(LinearGradient(colors: [Color.purple.opacity(0.85), Color.purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .cornerRadius(25)
+                            .shadow(color: .purple.opacity(0.25), radius: 10, x: 0, y: 5)
+                    }
+                    .padding(.bottom, 16)
+
+                    // MARK: - The "SOS" Button
+                    Button {
+                        // Use Task {} to call the async function from a synchronous button action
+                        Task {
+                            await triggerAIResponse()
+                        }
+                    } label: {
+                        Text("I have an urge!")
+                            .font(.largeTitle)
+                            .fontWeight(.heavy)
+                            .foregroundColor(.white)
+                            .padding(.vertical, 40)
+                            .padding(.horizontal, 30)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.red.opacity(0.8), Color.red],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .cornerRadius(35)
+                            .shadow(color: .red.opacity(0.4), radius: 15, x: 0, y: 10)
+                    }
+                    .disabled(isLoading)
+                    .scaleEffect(isLoading ? 0.95 : 1.0)
+                    .animation(.spring(), value: isLoading)
+
+                    Spacer()
+
+                    // MARK: - AI Response Area
+                    if isLoading {
+                        ProgressView("Thinking...")
+                            .font(.title2)
+                            .padding()
+                            .transition(.opacity)
+                    } else if showResponse {
+                        ScrollView {
+                            Text(aiResponse)
+                                .font(.title2)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(20)
+                                .padding(.horizontal)
+                                .minimumScaleFactor(0.8)
+                        }
+                        .frame(maxHeight: 250)
+                        .transition(.opacity)
+                    } else if let error = errorMessage {
+                        Text("Error: \(error)")
+                            .font(.headline)
+                            .foregroundColor(.red)
+                            .padding()
+                            .multilineTextAlignment(.center)
+                            .transition(.opacity)
+                    }
+
+                    Spacer()
+                }
             }
         }
     }
