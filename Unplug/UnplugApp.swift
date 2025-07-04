@@ -11,7 +11,7 @@ import SwiftUI
 struct UnplugApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            UnplugView()
         }
     }
 }
